@@ -3,10 +3,21 @@ import getpass
 import subprocess
 import time
 import sys
+import random
 from termcolor import colored
 
 LOCKFILE = "/var/tmp/.cache_sys_zer0fox.lock"
 LOCK_DURATION = 300  # 5 menit
+
+QUOTES = [
+    "Hidup kena select, kiri dengki, kanan lawan, belakang tikam, depan berlakon.",
+    "Cybersecurity bukan hanya skill, tapi juga mindset.",
+    "Informasi adalah senjata. Gunakan dengan bijak.",
+    "Kamu tidak bisa mengamankan sesuatu yang tidak kamu mengerti.",
+    "Setiap sistem punya celah, tugas kita menemukannya sebelum orang lain.",
+    "0Zer0Scanner – Only the best survives in the game.",
+    "Think like a hacker, act like a professional."
+]
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -129,6 +140,8 @@ def main():
     ||     Everything Can Be Hacked    ||
     ======================================
     """, "magenta"))
+    print(colored(f'"{random.choice(QUOTES)}"', "cyan"))
+    time.sleep(2)
     login()
     scan()
 
