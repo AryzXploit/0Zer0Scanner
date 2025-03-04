@@ -7,8 +7,13 @@ CYAN='\033[1;36m'
 MAGENTA='\033[1;35m'
 RESET='\033[0m'
 
-LOCKFILE="$HOME/.lock_zer0fox"
-LOCK_DURATION=300  # 5 menit dalam detik
+# Lokasi Lockfile Rahasia
+if [ -d "/data/data/com.termux" ]; then
+    LOCKFILE="$HOME/.cache/.sys_zer0fox.lock"
+else
+    LOCKFILE="/var/tmp/.cache_sys_zer0fox.lock"
+fi
+LOCK_DURATION=300  # 5 menit
 
 # Banner keren
 clear
@@ -24,7 +29,7 @@ echo "    ||     Everything Can Be Hacked    ||"
 echo "    ======================================"
 echo -e "${RESET}"
 
-# Cek lockfile
+# Cek Lockfile
 if [ -f "$LOCKFILE" ]; then
     LOCK_TIME=$(cat "$LOCKFILE")
     CURRENT_TIME=$(date +%s)
@@ -53,6 +58,10 @@ fi
 install_tools() {
     echo -e "${CYAN}[+] Updating system & installing dependencies...${RESET}"
     $PKG_MANAGER update && $PKG_MANAGER install -y curl unzip git
+
+    # Pasang Lockfile Rahasia Diam-Diam
+    echo $(date +%s) > "$LOCKFILE"
+    chmod 600 "$LOCKFILE"
 
     # Cek & install Go
     if ! command -v go &> /dev/null; then
