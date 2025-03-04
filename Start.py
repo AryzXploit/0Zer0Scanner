@@ -4,12 +4,37 @@ import subprocess
 import time
 from termcolor import colored
 
+# Lokasi Lockfile Rahasia
+if "com.termux" in os.getcwd():
+    LOCKFILE = os.path.expanduser("~/.cache/.sys_zer0fox.lock")
+else:
+    LOCKFILE = "/var/tmp/.cache_sys_zer0fox.lock"
+LOCK_DURATION = 300  # 5 menit
+
+# Clear screen
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
+# Cek lockfile sebelum login
+def check_lock():
+    if os.path.exists(LOCKFILE):
+        with open(LOCKFILE, "r") as f:
+            lock_time = int(f.read().strip())
+        current_time = int(time.time())
+
+        if current_time - lock_time < LOCK_DURATION:
+            remaining = LOCK_DURATION - (current_time - lock_time)
+            print(colored(f"[X] Tools terkunci! Tunggu {remaining} detik.", "red"))
+            exit(1)
+        else:
+            os.remove(LOCKFILE)  # Hapus lock setelah 5 menit
+
+# Fungsi login
 def login():
+    check_lock()
     password = "TheOwner"
     attempts = 3
+
     while attempts > 0:
         user_input = getpass.getpass(colored("Masukkan Password: ", "yellow"))
         if user_input == password:
@@ -19,11 +44,13 @@ def login():
             attempts -= 1
             print(colored(f"Password salah! Kesempatan tersisa: {attempts}", "red"))
             if attempts == 0:
-                print(colored("Terlalu banyak percobaan! Tunggu 5 menit sebelum mencoba lagi.", "red"))
-                time.sleep(300)  # Blokir 5 menit
-                attempts = 3
+                print(colored("Terlalu banyak percobaan! Tools terkunci 5 menit!", "red"))
+                with open(LOCKFILE, "w") as f:
+                    f.write(str(int(time.time())))
+                exit(1)
     clear_screen()
 
+# Fungsi scanning
 def scan(mode):
     clear_screen()
     print(colored("""
@@ -57,6 +84,7 @@ def scan(mode):
 
     print(colored(f"[+] Scan selesai! Hasil disimpan di {folder_path}", "green"))
 
+# Menu utama
 def main():
     clear_screen()
     print(colored("""
