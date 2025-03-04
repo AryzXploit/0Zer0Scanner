@@ -32,6 +32,8 @@ def login():
         user_input = getpass.getpass(colored("Masukkan Password: ", "yellow"))
         if user_input == password:
             print(colored("Login Berhasil!", "green"))
+            time.sleep(5)  # Tambahin delay 5 detik
+            print(colored("Verification successful! Welcome home, sir", "cyan"))
             break
         else:
             attempts -= 1
@@ -75,6 +77,20 @@ def vuln_scan(domain, folder_path):
     print(colored("[+] Menjalankan Arjun (parameter fuzzing)...", "cyan"))
     run_command(f"arjun -u https://{domain} -o {folder_path}/arjun_result.txt")
 
+def wpscan(domain, folder_path):
+    print(colored("[+] Menjalankan WPScan untuk WordPress vulnerability scanning...", "cyan"))
+    with open("wp-api.txt", "r") as f:
+        api_key = f.read().strip()
+    enum_options = input(colored("Masukkan opsi enumerate (contoh: u,vt,vp atau all): ", "yellow"))
+    if enum_options.lower() == "all":
+        enum_options = "u,vt,vp,tt,cb,ap"  # Semua opsi WPScan
+    run_command(f"wpscan --url https://{domain} --api-token {api_key} --enumerate {enum_options} -o {folder_path}/wpscan_result.txt")
+
+def waf_scan(domain, folder_path):
+    print(colored("[+] Menjalankan WAF Scanner...", "cyan"))
+    run_command(f"whatweb {domain} > {folder_path}/whatweb_result.txt")
+    run_command(f"wafw00f -a {domain} > {folder_path}/wafw00f_result.txt")
+
 def scan():
     clear_screen()
     domain = input(colored("Masukkan Domain Target: ", "yellow"))
@@ -87,9 +103,11 @@ def scan():
     print(colored("3. Port Scanning", "cyan"))
     print(colored("4. Fuzzing & Bruteforce", "cyan"))
     print(colored("5. Vulnerability Scanning", "cyan"))
-    print(colored("6. Full Scan (Semua Mode)", "cyan"))
+    print(colored("6. WordPress Scan (WPScan)", "cyan"))
+    print(colored("7. WAF Detection", "cyan"))
+    print(colored("8. Full Scan (Semua Mode)", "cyan"))
 
-    choice = input(colored("Pilih mode (1-6): ", "yellow"))
+    choice = input(colored("Pilih mode (1-8): ", "yellow"))
 
     if choice == "1":
         subdomain_recon(domain, folder_path)
@@ -102,11 +120,17 @@ def scan():
     elif choice == "5":
         vuln_scan(domain, folder_path)
     elif choice == "6":
+        wpscan(domain, folder_path)
+    elif choice == "7":
+        waf_scan(domain, folder_path)
+    elif choice == "8":
         subdomain_recon(domain, folder_path)
         web_recon(domain, folder_path)
         port_scan(domain, folder_path)
         fuzzing_brute(domain, folder_path)
         vuln_scan(domain, folder_path)
+        wpscan(domain, folder_path)
+        waf_scan(domain, folder_path)
     else:
         print(colored("Pilihan tidak valid!", "red"))
     
