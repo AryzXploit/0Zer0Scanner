@@ -64,6 +64,8 @@ def scan():
     clear_screen()
     print(colored("""
     ======================================
+    ||       0Zer0Scanner Login Page   ||
+    ======================================
     ||        0Zer0 Fox Scanner        ||
     ||     Everything Can Be Hacked    ||
     ======================================
@@ -103,6 +105,8 @@ def scan():
 def main():
     clear_screen()
     print(colored("""
+    ======================================
+    ||       0Zer0Scanner Login Page   ||
     ======================================
     ||        0Zer0 Fox Scanner        ||
     ||     Everything Can Be Hacked    ||
