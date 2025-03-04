@@ -73,6 +73,11 @@ def scan():
     |  __| |  __| | |  | | | | | |  | | | | |
     | |    | |____| |__| | |_| | |__| | |_| |
     |_|    |______|_____/ \___/|_____/ \___/ 
+    
+    WARNING: This tool is intended for educational purposes only.
+    Unauthorized use for hacking or illegal activities is strictly prohibited.
+    The developer is not responsible for any misuse of this tool.
+    Use this tool responsibly and ethically.
     """, "cyan"))
     
     domain = input(colored("Masukkan Domain Target: ", "yellow"))
