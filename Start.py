@@ -39,15 +39,14 @@ def login():
     password = "TheOwner"
     attempts = 3
 
-   while attempts > 0:
-    user_input = getpass.getpass(colored("Masukkan Password: ", "yellow"))
-    if user_input == password:
-        animate_verification()
-        time.sleep(4)  # Delay 5 detik setelah verifikasi
-        print(colored("Verification successful! Welcome home, sir", "cyan"))
-        time.sleep(3)  # Tambahin delay sebelum clear_screen()
-        break
-        
+    while attempts > 0:
+        user_input = getpass.getpass(colored("Masukkan Password: ", "yellow"))
+        if user_input == password:
+            animate_verification()
+            time.sleep(5)  # Delay 5 detik setelah verifikasi
+            print(colored("Verification successful! Welcome home, sir", "cyan"))
+            time.sleep(2)  # Tambahin delay sebelum clear_screen()
+            break
         else:
             attempts -= 1
             print(colored(f"Password salah! Kesempatan tersisa: {attempts}", "red"))
