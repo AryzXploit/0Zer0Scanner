@@ -43,8 +43,7 @@ def login():
         user_input = getpass.getpass(colored("Masukkan Password: ", "yellow"))
         if user_input == password:
             animate_verification()
-            print(colored("Login Berhasil!", "green"))
-            time.sleep(2)  # Tambahin delay
+            time.sleep(5)  # Delay 5 detik setelah verifikasi
             print(colored("Verification successful! Welcome home, sir", "cyan"))
             break
         else:
