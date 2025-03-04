@@ -26,7 +26,7 @@ pip install -r requirements.txt
 Jalankan tools dengan:
 
 ```bash
-python3 recon.py
+python3 Start.py
 ```
 
 Lalu ikuti instruksi yang muncul di layar.
