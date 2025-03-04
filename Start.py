@@ -1,6 +1,7 @@
 import os
 import getpass
 import subprocess
+import time
 from termcolor import colored
 
 def clear_screen():
@@ -8,17 +9,22 @@ def clear_screen():
 
 def login():
     password = "TheOwner"
-    while True:
+    attempts = 3
+    while attempts > 0:
         user_input = getpass.getpass(colored("Masukkan Password: ", "yellow"))
         if user_input == password:
             print(colored("Login Berhasil!", "green"))
             break
         else:
-            print(colored("Password salah, coba lagi!", "red"))
-
+            attempts -= 1
+            print(colored(f"Password salah! Kesempatan tersisa: {attempts}", "red"))
+            if attempts == 0:
+                print(colored("Terlalu banyak percobaan! Tunggu 5 menit sebelum mencoba lagi.", "red"))
+                time.sleep(300)  # Blokir 5 menit
+                attempts = 3
     clear_screen()
 
-def scan(mode, output_file):
+def scan(mode):
     clear_screen()
     print(colored("""
     ██████  ███████ ██████   ██████   ██████   █████▒
@@ -34,20 +40,22 @@ def scan(mode, output_file):
 
     print(colored(f"Scanning mode: {mode}", "blue"))
     domain = input(colored("Masukkan Domain Target: ", "yellow"))
+    folder_path = os.path.join(os.getcwd(), domain)
+    os.makedirs(folder_path, exist_ok=True)
 
     print(colored("[+] Mencari subdomain...", "cyan"))
-    subprocess.run(["subfinder", "-d", domain, "-all", "-o", "subdomains.txt"])
+    subprocess.run(["subfinder", "-d", domain, "-all", "-o", os.path.join(folder_path, "subdomains.txt")])
 
     print(colored("[+] Mengecek informasi domain...", "cyan"))
-    subprocess.run(["cat", "subdomains.txt", "|", "httpx", "-td", "-title", "-sc", "-ip", "-o", f"info-{domain}.txt"], shell=True)
+    subprocess.run(f"cat {folder_path}/subdomains.txt | httpx -td -title -sc -ip -o {folder_path}/info.txt", shell=True)
 
     print(colored("[+] Mengecek live host dengan port scanning...", "cyan"))
-    subprocess.run(["httpx", "-ports", "80,443,8080,8443,8000,8888,8081,8181,3306,5432,6379,27017,15672,10000,9090,5900", "-threads", "80", "-o", f"alive-{domain}.txt"])
+    subprocess.run(["httpx", "-ports", "80,443,8080,8443,8000,8888,8081,8181,3306,5432,6379,27017,15672,10000,9090,5900", "-threads", "80", "-o", os.path.join(folder_path, "alive.txt")])
 
     print(colored("[+] Menjalankan Nuclei untuk scanning vulnerability...", "cyan"))
-    subprocess.run(["nuclei", "-l", f"alive-{domain}.txt", "-t", "nuclei-templates-alt", "-o", output_file])
+    subprocess.run(["nuclei", "-l", os.path.join(folder_path, "alive.txt"), "-t", "nuclei-templates-alt", "-o", os.path.join(folder_path, "nuclei-result.txt")])
 
-    print(colored(f"[+] Scan selesai! Hasil disimpan di {output_file}", "green"))
+    print(colored(f"[+] Scan selesai! Hasil disimpan di {folder_path}", "green"))
 
 def main():
     clear_screen()
@@ -69,9 +77,7 @@ def main():
     mode_dict = {"1": "silent", "2": "normal", "3": "brute"}
     mode = mode_dict.get(mode_choice, "normal")
 
-    output_file = input(colored("Masukkan nama output file (contoh: hasil_scan.txt): ", "yellow"))
-
-    scan(mode, output_file)
+    scan(mode)
 
 if __name__ == "__main__":
     main()
