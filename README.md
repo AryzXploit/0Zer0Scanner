@@ -2,43 +2,48 @@
 
 **Everything Can Be Hacked**
 
-## 🔥 Overview
-0Zer0 Fox Scanner adalah alat otomatisasi reconnaissance dan scanning untuk bug bounty hunter & pentester. Tools ini bisa mencari subdomain, mengecek host yang hidup, serta scanning vulnerability dengan Nuclei.
+0Zer0 Fox Scanner adalah alat otomatisasi reconnaissance yang mempermudah pencarian subdomain, informasi domain, port scanning, serta deteksi kerentanan dengan Nuclei.
 
-## 🚀 Features
-- **Subdomain Enumeration** dengan `subfinder -all`
-- **Live Host Checking** dengan `httpx`
-- **Port Scanning** dengan HTTPX (`-ports 80,443,8080,8443,...`)
-- **Vulnerability Scanning** menggunakan **Nuclei**
-- **Multi-Mode Scanning**: Silent, Normal, Brute
-- **Fancy CLI Interface** 😎
+## 🚀 Fitur
+- Subdomain enumeration dengan `subfinder`
+- Informasi domain dengan `httpx`
+- Port scanning pada host yang aktif
+- Vulnerability scanning menggunakan `nuclei`
+- Mode scanning: Silent, Normal, Brute
+- Bisa dijalankan di Kali Linux & Termux
 
-## 🛠 Installation
-Pastikan lo udah install **subfinder, httpx, nuclei**, dan **Python 3**.
-
+## 📌 Instalasi
+### Untuk Kali Linux
 ```bash
-git clone https://github.com/AryzXploit/Tools-Recon.git
-cd Tools-Recon
+chmod +x setup.sh && ./setup.sh
+```
+
+### Untuk Termux
+```bash
+chmod +x setup.sh && ./setup.sh termux
+```
+
+## 🔥 Cara Penggunaan
+```bash
+python3 0zer0_recon.py
+```
+Lalu pilih mode scanning yang diinginkan.
+
+## ❌ Uninstall
+```bash
+chmod +x setup.sh && ./setup.sh uninstall
+```
+
+## 📝 Requirements
+Install dependencies dengan:
+```bash
 pip install -r requirements.txt
 ```
 
-## 💻 Usage
-Jalankan tools dengan:
+## ✨ Kontribusi
+Pull request dan issue selalu diterima! Feel free buat kontribusi.
 
-```bash
-python3 Start.py
-```
+---
+🦊 0Zer0 Fox Scanner - Everything Can Be Hacked!
 
-Lalu ikuti instruksi yang muncul di layar.
-
-## 🐝 Modes
-1. **Silent (Stealth Mode)** - Scan dengan request seminimal mungkin.
-2. **Normal (Standard Scan)** - Scan dengan kecepatan dan request standar.
-3. **Brute (Max Request)** - Scan dengan request maksimum.
-
-## 👤 Author
-Developed by **AryzXploit**
-
-## 📚 License
-[MIT License](LICENSE)
 
