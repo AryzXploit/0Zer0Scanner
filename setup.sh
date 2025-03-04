@@ -47,14 +47,24 @@ install_tools() {
             source ~/.bashrc
         fi
     else
-        echo -e "${GREEN}[+] Go already installed!${RESET}"
+        echo -e "${GREEN}[✔] Go already installed!${RESET}"
     fi
 
-    # Install ProjectDiscovery Tools
-    echo -e "${CYAN}[+] Installing ProjectDiscovery Tools...${RESET}"
-    go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
-    go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
-    go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest
+    # Cek & install ProjectDiscovery Tools
+    declare -A tools
+    tools=( ["subfinder"]="github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest"
+            ["httpx"]="github.com/projectdiscovery/httpx/cmd/httpx@latest"
+            ["nuclei"]="github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest" )
+
+    echo -e "${CYAN}[+] Checking & Installing ProjectDiscovery Tools...${RESET}"
+    for tool in "${!tools[@]}"; do
+        if command -v $tool &> /dev/null; then
+            echo -e "${GREEN}[✔] $tool already installed, skipping...${RESET}"
+        else
+            echo -e "${CYAN}[+] Installing $tool...${RESET}"
+            go install -v ${tools[$tool]}
+        fi
+    done
 
     echo -e "${GREEN}[✔] Installation complete! Restart terminal or run 'source ~/.bashrc'${RESET}"
 }
@@ -68,7 +78,7 @@ uninstall_tools() {
 }
 
 # Menu pilihan
-echo -e "${YELLOW}Pilih opsi:${RESET}"
+echo -e "${CYAN}Pilih opsi:${RESET}"
 echo -e "1. Install tools"
 echo -e "2. Uninstall tools"
 echo -e "3. Keluar"
