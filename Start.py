@@ -4,10 +4,7 @@ import subprocess
 import time
 from termcolor import colored
 
-if "com.termux" in os.getcwd():
-    LOCKFILE = os.path.expanduser("~/.cache/.sys_zer0fox.lock")
-else:
-    LOCKFILE = "/var/tmp/.cache_sys_zer0fox.lock"
+LOCKFILE = "/var/tmp/.cache_sys_zer0fox.lock"
 LOCK_DURATION = 300  # 5 menit
 
 def clear_screen():
@@ -25,6 +22,7 @@ def check_lock():
             exit(1)
         else:
             os.remove(LOCKFILE)  
+
 def login():
     check_lock()
     password = "TheOwner"
@@ -45,40 +43,75 @@ def login():
                 exit(1)
     clear_screen()
 
-def scan(mode):
-    clear_screen()
-    print(colored("""
-    ██████  ███████ ██████   ██████   ██████   █████▒
-    ▒██    ▒ ██      ██   ██ ██    ██ ██    ██ ██   ██
-    ▒████  ▒ █████   ██   ██ ██    ██ ██    ██ ██   ██
-    ▒██    ▒ ██      ██   ██ ██    ██ ██    ██ ██   ██
-    ▒██    ▒ ███████ ██████   ██████   ██████  ██████
-    =====================================
-    ||        0Zer0 Fox Scanner        ||
-    ||     Everything Can Be Hacked    ||
-    =====================================
-    """, "magenta"))
+def run_command(command):
+    subprocess.run(command, shell=True)
 
-    print(colored(f"Scanning mode: {mode}", "blue"))
+def subdomain_recon(domain, folder_path):
+    print(colored("[+] Mencari subdomain...", "cyan"))
+    run_command(f"subfinder -d {domain} -o {folder_path}/subdomains.txt")
+    run_command(f"assetfinder --subs-only {domain} >> {folder_path}/subdomains.txt")
+
+def web_recon(domain, folder_path):
+    print(colored("[+] Mengecek informasi domain...", "cyan"))
+    run_command(f"cat {folder_path}/subdomains.txt | httpx -td -title -sc -ip -o {folder_path}/info.txt")
+    print(colored("[+] Crawling website...", "cyan"))
+    run_command(f"katana -u https://{domain} -d 2 -o {folder_path}/crawl.txt")
+
+def port_scan(domain, folder_path):
+    print(colored("[+] Melakukan port scanning...", "cyan"))
+    run_command(f"nmap -p- {domain} -oN {folder_path}/nmap_scan.txt")
+
+def fuzzing_brute(domain, folder_path):
+    print(colored("[+] Menjalankan FFUF untuk directory fuzzing...", "cyan"))
+    run_command(f"ffuf -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -u https://{domain}/FUZZ -o {folder_path}/ffuf_result.txt")
+    print(colored("[+] Menjalankan Dirsearch...", "cyan"))
+    run_command(f"dirsearch -u https://{domain} -e php,html,js -o {folder_path}/dirsearch_result.txt")
+
+def vuln_scan(domain, folder_path):
+    print(colored("[+] Menjalankan Nuclei...", "cyan"))
+    run_command(f"nuclei -l {folder_path}/subdomains.txt -t nuclei-templates -o {folder_path}/nuclei_result.txt")
+    print(colored("[+] Menjalankan SQLmap...", "cyan"))
+    run_command(f"sqlmap -u https://{domain} --batch --dbs > {folder_path}/sqlmap_result.txt")
+    print(colored("[+] Menjalankan Arjun (parameter fuzzing)...", "cyan"))
+    run_command(f"arjun -u https://{domain} -o {folder_path}/arjun_result.txt")
+
+def scan():
+    clear_screen()
     domain = input(colored("Masukkan Domain Target: ", "yellow"))
     folder_path = os.path.join(os.getcwd(), domain)
     os.makedirs(folder_path, exist_ok=True)
 
-    print(colored("[+] Mencari subdomain...", "cyan"))
-    subprocess.run(["subfinder", "-d", domain, "-all", "-o", os.path.join(folder_path, "subdomains.txt")])
+    print(colored("Pilih jenis scanning:", "yellow"))
+    print(colored("1. Subdomain Recon", "cyan"))
+    print(colored("2. Web Recon & Crawling", "cyan"))
+    print(colored("3. Port Scanning", "cyan"))
+    print(colored("4. Fuzzing & Bruteforce", "cyan"))
+    print(colored("5. Vulnerability Scanning", "cyan"))
+    print(colored("6. Full Scan (Semua Mode)", "cyan"))
 
-    print(colored("[+] Mengecek informasi domain...", "cyan"))
-    subprocess.run(f"cat {folder_path}/subdomains.txt | httpx -td -title -sc -ip -o {folder_path}/info.txt", shell=True)
+    choice = input(colored("Pilih mode (1-6): ", "yellow"))
 
-    print(colored("[+] Mengecek live host dengan port scanning...", "cyan"))
-    subprocess.run(["httpx", "-ports", "80,443,8080,8443,8000,8888,8081,8181,3306,5432,6379,27017,15672,10000,9090,5900", "-threads", "80", "-o", os.path.join(folder_path, "alive.txt")])
-
-    print(colored("[+] Menjalankan Nuclei untuk scanning vulnerability...", "cyan"))
-    subprocess.run(["nuclei", "-l", os.path.join(folder_path, "alive.txt"), "-t", "nuclei-templates-alt", "-o", os.path.join(folder_path, "nuclei-result.txt")])
-
+    if choice == "1":
+        subdomain_recon(domain, folder_path)
+    elif choice == "2":
+        web_recon(domain, folder_path)
+    elif choice == "3":
+        port_scan(domain, folder_path)
+    elif choice == "4":
+        fuzzing_brute(domain, folder_path)
+    elif choice == "5":
+        vuln_scan(domain, folder_path)
+    elif choice == "6":
+        subdomain_recon(domain, folder_path)
+        web_recon(domain, folder_path)
+        port_scan(domain, folder_path)
+        fuzzing_brute(domain, folder_path)
+        vuln_scan(domain, folder_path)
+    else:
+        print(colored("Pilihan tidak valid!", "red"))
+    
     print(colored(f"[+] Scan selesai! Hasil disimpan di {folder_path}", "green"))
 
-# Menu utama
 def main():
     clear_screen()
     print(colored("""
@@ -87,19 +120,8 @@ def main():
     ||     Everything Can Be Hacked    ||
     ======================================
     """, "magenta"))
-
     login()
-
-    print(colored("Pilih mode scanning:", "yellow"))
-    print(colored("1. Silent (Stealth Mode)", "cyan"))
-    print(colored("2. Normal (Standar Scan)", "cyan"))
-    print(colored("3. Brute (Max Request)", "cyan"))
-
-    mode_choice = input(colored("Pilih mode (1/2/3): ", "yellow"))
-    mode_dict = {"1": "silent", "2": "normal", "3": "brute"}
-    mode = mode_dict.get(mode_choice, "normal")
-
-    scan(mode)
+    scan()
 
 if __name__ == "__main__":
     main()
