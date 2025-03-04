@@ -7,6 +7,9 @@ CYAN='\033[1;36m'
 MAGENTA='\033[1;35m'
 RESET='\033[0m'
 
+LOCKFILE="$HOME/.lock_zer0fox"
+LOCK_DURATION=300  # 5 menit dalam detik
+
 # Banner keren
 clear
 echo -e "${MAGENTA}"
@@ -20,6 +23,21 @@ echo "    ||      0Zer0 Fox Installer        ||"
 echo "    ||     Everything Can Be Hacked    ||"
 echo "    ======================================"
 echo -e "${RESET}"
+
+# Cek lockfile
+if [ -f "$LOCKFILE" ]; then
+    LOCK_TIME=$(cat "$LOCKFILE")
+    CURRENT_TIME=$(date +%s)
+    DIFF=$((CURRENT_TIME - LOCK_TIME))
+
+    if [ $DIFF -lt $LOCK_DURATION ]; then
+        REMAINING=$((LOCK_DURATION - DIFF))
+        echo -e "${RED}[X] Tools sedang dikunci! Coba lagi dalam $REMAINING detik.${RESET}"
+        exit 1
+    else
+        rm -f "$LOCKFILE"  # Hapus lock jika sudah lebih dari 5 menit
+    fi
+fi
 
 # Cek sistem (Linux atau Termux)
 if [ -d "/data/data/com.termux" ]; then
@@ -66,7 +84,7 @@ install_tools() {
         fi
     done
 
-    echo -e "${GREEN}[✔] Installation complete! Restart terminal or run 'source ~/.bashrc'${RESET}"
+    echo -e "${GREEN}[✔] Installation complete! Restart terminal atau run 'source ~/.bashrc'${RESET}"
 }
 
 uninstall_tools() {
