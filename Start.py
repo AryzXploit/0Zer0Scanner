@@ -63,12 +63,6 @@ def run_command(command):
 def scan():
     clear_screen()
     print(colored("""
-    ======================================
-    ||       0Zer0Scanner Login Page   ||
-    ======================================
-    ||        0Zer0 Fox Scanner        ||
-    ||     Everything Can Be Hacked    ||
-    ======================================
      ______ ______ _____   ___  _____   ___  
     |  ____|  ____|  __ \ / _ \|  __ \ / _ \ 
     | |__  | |__  | |  | | | | | |  | | | | |
@@ -98,7 +92,30 @@ def scan():
 
     choice = input(colored("Pilih mode (1-8): ", "yellow"))
     
-    # Tambahkan fungsi scan di sini
+    if choice == "1":
+        run_command(f"subfinder -d {domain} -o {folder_path}/subdomains.txt")
+    elif choice == "2":
+        run_command(f"gobuster dir -u {domain} -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -o {folder_path}/web_recon.txt")
+    elif choice == "3":
+        run_command(f"nmap -sV -oN {folder_path}/port_scan.txt {domain}")
+    elif choice == "4":
+        run_command(f"ffuf -u http://{domain}/FUZZ -w /usr/share/wordlists/rockyou.txt -o {folder_path}/fuzzing.txt")
+    elif choice == "5":
+        run_command(f"nikto -h {domain} -o {folder_path}/vulnerability_scan.txt")
+    elif choice == "6":
+        run_command(f"wpscan --url {domain} --enumerate vp -o {folder_path}/wordpress_scan.txt")
+    elif choice == "7":
+        run_command(f"wafw00f {domain} -o {folder_path}/waf_detection.txt")
+    elif choice == "8":
+        run_command(f"subfinder -d {domain} -o {folder_path}/subdomains.txt")
+        run_command(f"gobuster dir -u {domain} -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -o {folder_path}/web_recon.txt")
+        run_command(f"nmap -sV -oN {folder_path}/port_scan.txt {domain}")
+        run_command(f"ffuf -u http://{domain}/FUZZ -w /usr/share/wordlists/rockyou.txt -o {folder_path}/fuzzing.txt")
+        run_command(f"nikto -h {domain} -o {folder_path}/vulnerability_scan.txt")
+        run_command(f"wpscan --url {domain} --enumerate vp -o {folder_path}/wordpress_scan.txt")
+        run_command(f"wafw00f {domain} -o {folder_path}/waf_detection.txt")
+    else:
+        print(colored("[!] Mode belum tersedia!", "red"))
 
     print(colored(f"[+] Scan selesai! Hasil disimpan di {folder_path}", "green"))
 
