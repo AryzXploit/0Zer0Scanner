@@ -4,18 +4,15 @@ import subprocess
 import time
 from termcolor import colored
 
-# Lokasi Lockfile Rahasia
 if "com.termux" in os.getcwd():
     LOCKFILE = os.path.expanduser("~/.cache/.sys_zer0fox.lock")
 else:
     LOCKFILE = "/var/tmp/.cache_sys_zer0fox.lock"
 LOCK_DURATION = 300  # 5 menit
 
-# Clear screen
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
-# Cek lockfile sebelum login
 def check_lock():
     if os.path.exists(LOCKFILE):
         with open(LOCKFILE, "r") as f:
@@ -27,9 +24,7 @@ def check_lock():
             print(colored(f"[X] Tools terkunci! Tunggu {remaining} detik.", "red"))
             exit(1)
         else:
-            os.remove(LOCKFILE)  # Hapus lock setelah 5 menit
-
-# Fungsi login
+            os.remove(LOCKFILE)  
 def login():
     check_lock()
     password = "TheOwner"
@@ -50,7 +45,6 @@ def login():
                 exit(1)
     clear_screen()
 
-# Fungsi scanning
 def scan(mode):
     clear_screen()
     print(colored("""
