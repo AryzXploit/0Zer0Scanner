@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Warna buat tampilan lebih keren
+# Warna untuk tampilan lebih keren
 RED='\033[1;31m'
 GREEN='\033[1;32m'
 CYAN='\033[1;36m'
@@ -15,7 +15,7 @@ else
 fi
 LOCK_DURATION=300  # 5 menit
 
-# Banner keren
+# Banner Keren
 clear
 echo -e "${MAGENTA}"
 echo "    ██████  ███████ ██████   ██████   ██████   █████▒"
@@ -57,11 +57,15 @@ fi
 
 install_tools() {
     echo -e "${CYAN}[+] Updating system & installing dependencies...${RESET}"
-    $PKG_MANAGER update && $PKG_MANAGER install -y curl unzip git
+    $PKG_MANAGER update -y && $PKG_MANAGER install -y curl unzip git python python3-pip ruby
 
     # Pasang Lockfile Rahasia Diam-Diam
     echo $(date +%s) > "$LOCKFILE"
     chmod 600 "$LOCKFILE"
+
+    # Install Virtualenv
+    echo -e "${CYAN}[+] Installing Virtualenv...${RESET}"
+    pip install virtualenv
 
     # Cek & install Go
     if ! command -v go &> /dev/null; then
@@ -93,14 +97,34 @@ install_tools() {
         fi
     done
 
+    # Install additional tools
+    echo -e "${CYAN}[+] Installing additional scanning tools...${RESET}"
+    if [ "$OS" == "termux" ]; then
+        pkg install nmap gobuster ffuf nikto -y
+        gem install wpscan
+    else
+        sudo apt install nmap gobuster ffuf nikto wafw00f -y
+        sudo gem install wpscan
+    fi
+
     echo -e "${GREEN}[✔] Installation complete! Restart terminal atau run 'source ~/.bashrc'${RESET}"
 }
 
 uninstall_tools() {
-    echo -e "${RED}[!] Uninstalling ProjectDiscovery tools...${RESET}"
+    echo -e "${RED}[!] Uninstalling all tools...${RESET}"
     rm -rf $HOME/go/bin/subfinder
     rm -rf $HOME/go/bin/httpx
     rm -rf $HOME/go/bin/nuclei
+    rm -rf $HOME/go/bin
+    rm -rf $HOME/.cache
+    rm -rf $HOME/.local/bin
+    if [ "$OS" == "linux" ]; then
+        sudo apt remove nmap gobuster ffuf nikto wafw00f -y
+        sudo gem uninstall wpscan
+    else
+        pkg uninstall nmap gobuster ffuf nikto -y
+        gem uninstall wpscan
+    fi
     echo -e "${GREEN}[✔] Uninstall complete!${RESET}"
 }
 
