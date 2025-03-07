@@ -99,7 +99,7 @@ def scan():
     print(colored("5. Vulnerability Scanning", "cyan"))
     print(colored("6. WordPress Scan (WPScan)", "cyan"))
     print(colored("7. WAF Detection", "cyan"))
-    print(colored("8. Full Scan (Semua Mode)", "cyan"))
+    print(colored("8. Full Scan (BETA TEST!)", "cyan"))
 
     choice = input(colored("Pilih mode (1-8): ", "yellow"))
     
